@@ -24,7 +24,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>BadPotato.ExecuteRectangle</StartupObject>
+    <StartupObject>BadPotato</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
