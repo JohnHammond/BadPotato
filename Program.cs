@@ -132,7 +132,7 @@ class BadPotato
                                     try
                                     {
                                        WindowsIdentity.Impersonate(hSystemTokenDup);
-                                        return new Dictionary<string, object>();
+                                       return new Dictionary<string, object>();
                                     }
                                     catch {
                                         error();
@@ -175,6 +175,8 @@ class BadPotato
         {
             error();
         }
+
+        return new Dictionary<string, object>();
     }
 
     

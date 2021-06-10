@@ -1,0 +1,2 @@
+C:\Users\johnh\source\repos\BadPotato\obj\Debug\BadPotato.csproj.AssemblyReference.cache
+C:\Users\johnh\source\repos\BadPotato\obj\Debug\BadPotato.csproj.CoreCompileInputs.cache

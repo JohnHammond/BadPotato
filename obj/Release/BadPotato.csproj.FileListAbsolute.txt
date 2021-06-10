@@ -1,5 +1,5 @@
-C:\Users\johnh\Source\Repos\BadPotato\bin\Release\BadPotato.exe.config
-C:\Users\johnh\Source\Repos\BadPotato\bin\Release\BadPotato.exe
 C:\Users\johnh\Source\Repos\BadPotato\obj\Release\BadPotato.csproj.CoreCompileInputs.cache
-C:\Users\johnh\Source\Repos\BadPotato\obj\Release\BadPotato.exe
 C:\Users\johnh\Source\Repos\BadPotato\obj\Release\BadPotato.csproj.AssemblyReference.cache
+C:\Users\johnh\source\repos\BadPotato\bin\Release\BadPotato.dll.config
+C:\Users\johnh\source\repos\BadPotato\bin\Release\BadPotato.dll
+C:\Users\johnh\source\repos\BadPotato\obj\Release\BadPotato.dll

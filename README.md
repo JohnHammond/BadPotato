@@ -1,16 +1,7 @@
-# BadPotato
+# BadPotato DLL to side-load into pwncat
 
-Windows 2012-2019
+Reference: https://github.com/BeichenDream/BadPotato
 
+Modified code to retain the impersonated SYSTEM token within a method of a DLL. 
 
-Windows 8-10
-
-![](https://raw.githubusercontent.com/BeichenDream/BadPotato/master/screen.png)
-
-## 引用
-
-
-[https://github.com/vletoux/pingcastle](https://github.com/vletoux/pingcastle "pingcastle")
-
-
-[https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/](https://itm4n.github.io/printspoofer-abusing-impersonate-privileges/ "PrintSpoofer")
+Retains pwncat's C2 ProtocolError exceptions by reflection. 

@@ -24,7 +24,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>BadPotato</StartupObject>
+    <StartupObject>
+    </StartupObject>
+    <ProjectGuid>{3B0F8EEB-1280-46EA-A0C5-591C488FE8B2}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
