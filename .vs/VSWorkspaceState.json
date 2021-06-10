@@ -3,7 +3,9 @@
     "",
     "\\obj",
     "\\obj\\Release",
-    "\\Properties"
+    "\\Properties",
+    "\\RPC"
   ],
+  "SelectedNode": "\\BadPotato.csproj",
   "PreviewInSolutionExplorer": false
 }
